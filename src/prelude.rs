@@ -1,0 +1,1 @@
+pub type DayResult = (Option<String>, Option<String>);
