@@ -1,2 +1,5 @@
 pub type DayResult = Option<String>;
-pub type Day = (fn() -> DayResult, fn() -> DayResult);
+pub trait Day {
+    fn puzzle_1(&self) -> DayResult;
+    fn puzzle_2(&self) -> DayResult;
+}
