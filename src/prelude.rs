@@ -1,1 +1,2 @@
-pub type DayResult = (Option<String>, Option<String>);
+pub type DayResult = Option<String>;
+pub type Day = (fn() -> DayResult, fn() -> DayResult);
