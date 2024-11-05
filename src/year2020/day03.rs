@@ -58,27 +58,50 @@ const RAW_MAP: &str = include_str!("../../inputs/year2020/day03.txt");
 ///
 /// Starting at the top-left corner of your map and following a slope of right 3 and down 1, how many trees would you encounter?
 pub fn puzzle_1() -> DayResult {
-    let trees_array = RAW_MAP.as_bytes();
-    let mut trees_found = 0;
-    let mut x = 0;
-    let mut y = 0;
+    let map: Vec<&[u8]> = RAW_MAP.lines().map(|line| line.as_bytes()).collect();
+    let mut trees = 0;
 
-    let mut line_width = 0;
-    while trees_array[line_width] as char != '\n' {
-        line_width += 1;
-    }
-    while x + 3 <= line_width {
-        x += 3;
-        y += 1;
-        match trees_array[x * y * std::mem::size_of::<u8>()] as char {
-            '#' => trees_found += 1,
-            _ => (),
-        };
+    for line in 0..map.len() - 1 {
+        let position = (line + 1) * 3 % map[line].len();
+        if map[line + 1][position] == b'#' {
+            trees += 1;
+        }
     }
 
-    Some(trees_found.to_string())
+    Some(trees.to_string())
 }
 
+/// # Part Two
+/// Time to check the rest of the slopes - you need to minimize the probability of a sudden arboreal stop, after all.
+///
+/// Determine the number of trees you would encounter if, for each of the following slopes, you start at the top-left corner and traverse the map all the way to the bottom:
+///
+/// Right 1, down 1.
+/// Right 3, down 1. (This is the slope you already checked.)
+/// Right 5, down 1.
+/// Right 7, down 1.
+/// Right 1, down 2.
+/// In the above example, these slopes would find 2, 7, 3, 4, and 2 tree(s) respectively; multiplied together, these produce the answer 336.
+///
+/// What do you get if you multiply together the number of trees encountered on each of the listed slopes?
 pub fn puzzle_2() -> DayResult {
-    Some("weon".to_string())
+    let map: Vec<&[u8]> = RAW_MAP.lines().map(|line| line.as_bytes()).collect();
+    let slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
+    let mut tree_product: usize = 1;
+
+    for slope in slopes {
+        let mut trees = 0;
+        let mut x = 0;
+
+        for y in (slope.1..map.len()).step_by(slope.1) {
+            x = (x + slope.0) % map[0].len();
+            if map[y][x] == b'#' {
+                trees += 1;
+            }
+        }
+
+        tree_product *= trees;
+    }
+
+    Some(tree_product.to_string())
 }
