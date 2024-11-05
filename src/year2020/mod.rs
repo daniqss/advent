@@ -1,35 +1,32 @@
 use crate::prelude::Day;
-mod day2020_01;
-mod day2020_02;
-use day2020_01::Day2020_01;
-use day2020_02::Day2020_02;
+mod day01;
+mod day02;
+mod day03;
 
-pub fn year_2020() -> [Option<Box<dyn Day>>; 25] {
-    [
-        Some(Box::new(Day2020_01::new())),
-        Some(Box::new(Day2020_02::new())),
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    ]
-}
+pub const YEAR_2020: [Option<Day>; 25] = [
+    Some((day01::puzzle_1, day01::puzzle_2)),
+    Some((day02::puzzle_1, day02::puzzle_2)),
+    Some((day03::puzzle_1, day03::puzzle_2)),
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+];
