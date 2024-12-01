@@ -39,6 +39,7 @@ const RAW: &str = include_str!("../../inputs/year2024/day01.txt");
 ///
 /// Your actual left and right lists contain many location IDs. What is the total distance between your lists?
 pub fn puzzle_1() -> DayResult {
+    // parse from raw input into two separate vectors
     let (mut list_1, mut list_2): (Vec<isize>, Vec<isize>) = RAW
         .lines()
         .map(|line| {
@@ -49,6 +50,7 @@ pub fn puzzle_1() -> DayResult {
         })
         .collect();
 
+    // sort the two vectors to compare same indexes
     list_1.sort();
     list_2.sort();
 
@@ -56,7 +58,9 @@ pub fn puzzle_1() -> DayResult {
         "{}",
         list_1
             .iter()
+            // zip the vectors to have iter over tuples
             .zip(list_2)
+            // return difference for each element
             .map(|(a, b)| match *a > b {
                 true => *a - b,
                 false => b - *a,
@@ -94,6 +98,7 @@ pub fn puzzle_1() -> DayResult {
 ///
 /// Once again consider your left and right lists. What is their similarity score?
 pub fn puzzle_2() -> DayResult {
+    // parse from raw input into two separate vectors
     let (mut list_1, mut list_2): (Vec<isize>, Vec<isize>) = RAW
         .lines()
         .map(|line| {
@@ -104,17 +109,17 @@ pub fn puzzle_2() -> DayResult {
         })
         .collect();
 
+    // sort the two vectors to compare same indexes
+    // we dont need to sort list_2 this time
+    // removing it we afford ~1000µs!!
     list_1.sort();
-    list_2.sort();
 
     Some(format!(
         "{}",
+        // multiple each element in list_1 for the times it appears in list_2
         list_1
             .iter()
-            .map(|a| {
-                let count = list_2.iter().filter(|b| a == *b).count();
-                *a * count as isize
-            })
+            .map(|a| *a * list_2.iter().filter(|b| a == *b).count() as isize)
             .sum::<isize>()
     ))
 }
