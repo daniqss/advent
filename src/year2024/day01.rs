@@ -99,7 +99,7 @@ pub fn puzzle_1() -> DayResult {
 /// Once again consider your left and right lists. What is their similarity score?
 pub fn puzzle_2() -> DayResult {
     // parse from raw input into two separate vectors
-    let (mut list_1, mut list_2): (Vec<isize>, Vec<isize>) = RAW
+    let (mut list_1, list_2): (Vec<isize>, Vec<isize>) = RAW
         .lines()
         .map(|line| {
             let mut parts = line.split_whitespace();
