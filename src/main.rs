@@ -1,28 +1,42 @@
 use std::time::{Duration, Instant};
 mod prelude;
 mod year2020;
+mod year2024;
 
 use prelude::DayResult;
 use year2020::YEAR_2020;
+use year2024::YEAR_2024;
 
 fn main() {
-    for i in 0..YEAR_2020.len() {
-        if let Some(day) = YEAR_2020[i] {
-            match timer(day) {
-                ((time_1, Some(puzzle_1)), (time_2, Some(puzzle_2))) => {
-                    println!("Day {:02} -> ", i + 1);
-                    println!(
-                        "Part 1 -> {}, {}µs\tPart 2 -> {}, {}µs\n",
-                        puzzle_1,
-                        time_1.as_micros(),
-                        puzzle_2,
-                        time_2.as_micros()
-                    );
+    let years = vec![YEAR_2020, YEAR_2024];
+
+    years.iter().for_each(|year| {
+        year.iter().enumerate().for_each(|(i, day)| {
+            if let Some(day) = day {
+                match timer(*day) {
+                    ((time_1, Some(puzzle_1)), (time_2, Some(puzzle_2))) => {
+                        println!("Day {:02} -> ", i + 1);
+                        println!(
+                            "Part 1 -> {}, {}µs\tPart 2 -> {}, {}µs\n",
+                            puzzle_1,
+                            time_1.as_micros(),
+                            puzzle_2,
+                            time_2.as_micros()
+                        );
+                    }
+                    ((time_1, Some(puzzle_1)), _) => {
+                        println!("Day {:02} -> ", i + 1);
+                        println!(
+                            "Part 1 -> {}, {}µs\tPart 2 -> Not complete yet",
+                            puzzle_1,
+                            time_1.as_micros(),
+                        );
+                    }
+                    _ => {}
                 }
-                _ => {}
             }
-        }
-    }
+        })
+    });
 }
 
 fn timer(
