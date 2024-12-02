@@ -1,10 +1,10 @@
 mod day01;
+mod day02;
 use crate::prelude::Day;
-use day01::{puzzle_1, puzzle_2};
 
 pub const YEAR_2024: [Option<Day>; 25] = [
-    Some((puzzle_1, puzzle_2)),
-    None,
+    Some((day01::puzzle_1, day01::puzzle_2)),
+    Some((day02::puzzle_1, day02::puzzle_2)),
     None,
     None,
     None,
