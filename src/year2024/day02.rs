@@ -1,12 +1,6 @@
 use crate::prelude::*;
 const RAW: &str = include_str!("../../inputs/year2024/day02.txt");
 
-enum LEVEL {
-    ZERO,
-    ONE,
-    TWO,
-}
-
 /// --- Day 2: Red-Nosed Reports ---
 /// Fortunately, the first location The Historians want to search isn't a long walk from the Chief Historian's office.
 ///
@@ -52,33 +46,7 @@ pub fn puzzle_1() -> DayResult {
 
     let mut safe_reports = 0;
     for report in reports {
-        let mut is_safe = true;
-        let mut trend: Option<bool> = None;
-
-        for i in 1..report.len() {
-            let diff = report[i] - report[i - 1];
-
-            if diff.abs() > 3 || diff == 0 {
-                is_safe = false;
-                break;
-            }
-
-            match trend {
-                None => trend = Some(diff > 0),
-                Some(increasing) => {
-                    if increasing && diff <= 0 {
-                        is_safe = false;
-                        break;
-                    }
-                    if !increasing && diff >= 0 {
-                        is_safe = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if is_safe && trend.is_some() {
+        if is_safe(&report) {
             safe_reports += 1;
         }
     }
@@ -116,76 +84,54 @@ pub fn puzzle_2() -> DayResult {
         .collect();
 
     let mut safe_reports = 0;
-    let mut safe_reports_with_zero = 0;
-    let mut safe_reports_with_one = 0;
-    let mut unsafe_reports = 0;
     for report in reports {
-        let mut is_safe = LEVEL::ZERO;
-        let mut trend: Option<bool> = None;
-
-        for i in 1..report.len() {
-            let diff = report[i] - report[i - 1];
-
-            if diff.abs() > 3 || diff == 0 {
-                match is_safe {
-                    LEVEL::ZERO => is_safe = LEVEL::ONE,
-                    LEVEL::ONE => {
-                        is_safe = LEVEL::ONE;
-                        break;
-                    }
-                    _ => unreachable!("wtf"),
-                }
-            }
-
-            match trend {
-                None => trend = Some(diff > 0),
-                Some(increasing) => {
-                    if increasing && diff <= 0 {
-                        match is_safe {
-                            LEVEL::ZERO => is_safe = LEVEL::ONE,
-                            LEVEL::ONE => {
-                                is_safe = LEVEL::TWO;
-                                break;
-                            }
-                            LEVEL::TWO => unreachable!("wtf"),
-                        }
-                    }
-                    if !increasing && diff >= 0 {
-                        match is_safe {
-                            LEVEL::ZERO => is_safe = LEVEL::ONE,
-                            LEVEL::ONE => {
-                                is_safe = LEVEL::TWO;
-                                break;
-                            }
-                            LEVEL::TWO => unreachable!("wtf"),
-                        }
-                    }
-                }
-            }
-        }
-
-        match is_safe {
-            LEVEL::ZERO => {
-                if trend.is_some() {
-                    safe_reports_with_zero += 1;
+        if is_safe(&report) {
+            safe_reports += 1;
+        } else {
+            for i in 0..report.len() {
+                let mut modified_report = report.clone();
+                modified_report.remove(i);
+                if is_safe(&modified_report) {
                     safe_reports += 1;
+                    break;
                 }
             }
-            LEVEL::ONE => {
-                if trend.is_some() {
-                    safe_reports_with_one += 1;
-                    safe_reports += 1;
-                }
-            }
-            LEVEL::TWO => unsafe_reports += 1,
         }
     }
-    assert_eq!(safe_reports, safe_reports_with_one + safe_reports_with_zero);
-    assert_eq!(1000, safe_reports + unsafe_reports);
-    assert_eq!(
-        1000,
-        safe_reports_with_one + safe_reports_with_zero + unsafe_reports
-    );
 
     Some(format!("{}", safe_reports))
+}
+
+fn is_safe(report: &Vec<isize>) -> bool {
+    let mut is_safe = true;
+    let mut bad_index = None;
+    let mut trend: Option<bool> = None;
+
+    for i in 1..report.len() {
+        let diff = report[i] - report[i - 1];
+
+        if diff.abs() > 3 || diff == 0 {
+            bad_index = Some(i);
+            is_safe = false;
+            break;
+        }
+
+        match trend {
+            None => trend = Some(diff > 0),
+            Some(increasing) => {
+                if increasing && diff <= 0 {
+                    bad_index = Some(i);
+                    is_safe = false;
+                    break;
+                }
+                if !increasing && diff >= 0 {
+                    bad_index = Some(i);
+                    is_safe = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    is_safe && trend.is_some()
 }
