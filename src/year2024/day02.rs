@@ -104,14 +104,12 @@ pub fn puzzle_2() -> DayResult {
 
 fn is_safe(report: &Vec<isize>) -> bool {
     let mut is_safe = true;
-    let mut bad_index = None;
     let mut trend: Option<bool> = None;
 
     for i in 1..report.len() {
         let diff = report[i] - report[i - 1];
 
         if diff.abs() > 3 || diff == 0 {
-            bad_index = Some(i);
             is_safe = false;
             break;
         }
@@ -120,12 +118,10 @@ fn is_safe(report: &Vec<isize>) -> bool {
             None => trend = Some(diff > 0),
             Some(increasing) => {
                 if increasing && diff <= 0 {
-                    bad_index = Some(i);
                     is_safe = false;
                     break;
                 }
                 if !increasing && diff >= 0 {
-                    bad_index = Some(i);
                     is_safe = false;
                     break;
                 }

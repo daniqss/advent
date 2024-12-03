@@ -32,6 +32,14 @@ fn main() {
                             time_1.as_micros(),
                         );
                     }
+                    (_, (time_2, Some(puzzle_2))) => {
+                        println!("Day {:02} -> ", i + 1);
+                        println!(
+                            "Part 1 -> Not complete yet\tPart 2 -> {}, {}µs",
+                            puzzle_2,
+                            time_2.as_micros(),
+                        );
+                    }
                     _ => {}
                 }
             }
