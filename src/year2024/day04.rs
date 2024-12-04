@@ -42,141 +42,44 @@ pub fn puzzle_1(raw: &str) -> DayResult {
     let word_search: Vec<Vec<u8>> = raw.lines().map(|l| l.as_bytes().to_vec()).collect();
     let check_letters: [u8; 3] = [b'M', b'A', b'S'];
     let mut count = 0;
-    #[cfg(test)]
-    println!("{}", raw);
+
+    let directions: [(isize, isize); 8] = [
+        (0, -1),
+        (0, 1),
+        (-1, 0),
+        (1, 0),
+        (-1, -1),
+        (-1, 1),
+        (1, -1),
+        (1, 1),
+    ];
 
     for i in 0..word_search.len() {
         for j in 0..word_search[i].len() {
             if word_search[i][j] == b'X' {
-                // left
-                if j as isize - 3 >= 0 {
-                    let mut positions: Vec<(usize, usize)> = Vec::new();
-                    let mut left_count = 0;
-                    for k in 1..check_letters.len() + 1 {
-                        if word_search[i][j - k] == check_letters[k - 1] {
-                            positions.push((i, j - k));
-                            left_count += 1;
-                        }
-                    }
-                    if left_count == 3 {
-                        count += 1;
-                        #[cfg(test)]
-                        println!("found XMAS in ({}, {}) => {:?}", i, j, positions);
-                    }
-                }
-                // left up
-                if j as isize - 3 >= 0 && i as isize - 3 >= 0 {
-                    let mut positions: Vec<(usize, usize)> = Vec::new();
-                    let mut left_up_count = 0;
-                    for k in 1..check_letters.len() + 1 {
-                        if word_search[i - k][j - k] == check_letters[k - 1] {
-                            positions.push((i - k, j - k));
-                            left_up_count += 1;
-                        }
-                    }
-                    if left_up_count == 3 {
-                        count += 1;
-                        #[cfg(test)]
-                        println!("found XMAS in ({}, {}) => {:?}", i, j, positions);
-                    }
-                }
+                for &(dx, dy) in &directions {
+                    #[cfg(test)]
+                    let mut positions = Vec::new();
+                    let mut matched = true;
 
-                // up
-                if i as isize - 3 >= 0 {
-                    let mut positions: Vec<(usize, usize)> = Vec::new();
-                    let mut up_count = 0;
-                    for k in 1..check_letters.len() + 1 {
-                        if word_search[i - k][j] == check_letters[k - 1] {
-                            positions.push((i - k, j));
-                            up_count += 1;
-                        }
-                    }
-                    if up_count == 3 {
-                        count += 1;
-                        #[cfg(test)]
-                        println!("found XMAS in ({}, {}) => {:?}", i, j, positions);
-                    }
-                }
+                    for k in 1..=check_letters.len() {
+                        let x = i as isize + k as isize * dx;
+                        let y = j as isize + k as isize * dy;
 
-                // right up
-                if j + 3 <= word_search[i].len() - 1 && i as isize - 3 >= 0 {
-                    let mut positions: Vec<(usize, usize)> = Vec::new();
-                    let mut right_up_count = 0;
-                    for k in 1..check_letters.len() + 1 {
-                        if word_search[i - k][j + k] == check_letters[k - 1] {
-                            positions.push((i - k, j + k));
-                            right_up_count += 1;
+                        if x < 0
+                            || y < 0
+                            || x as usize >= word_search.len()
+                            || y as usize >= word_search[0].len()
+                            || word_search[x as usize][y as usize] != check_letters[k - 1]
+                        {
+                            matched = false;
+                            break;
                         }
-                    }
-                    if right_up_count == 3 {
-                        count += 1;
                         #[cfg(test)]
-                        println!("found XMAS in ({}, {}) => {:?}", i, j, positions);
+                        positions.push((x as usize, y as usize));
                     }
-                }
 
-                // right
-                if j + 3 <= word_search[i].len() - 1 {
-                    let mut positions: Vec<(usize, usize)> = Vec::new();
-                    let mut right_count = 0;
-                    for k in 1..check_letters.len() + 1 {
-                        if word_search[i][j + k] == check_letters[k - 1] {
-                            positions.push((i, j + k));
-                            right_count += 1;
-                        }
-                    }
-                    if right_count == 3 {
-                        count += 1;
-                        #[cfg(test)]
-                        println!("found XMAS in ({}, {}) => {:?}", i, j, positions);
-                    }
-                }
-
-                // right down
-                if j + 3 <= word_search[i].len() - 1 && i + 3 < word_search.len() {
-                    let mut positions: Vec<(usize, usize)> = Vec::new();
-                    let mut right_down_count = 0;
-                    for k in 1..check_letters.len() + 1 {
-                        if word_search[i + k][j + k] == check_letters[k - 1] {
-                            positions.push((i + k, j + k));
-                            right_down_count += 1;
-                        }
-                    }
-                    if right_down_count == 3 {
-                        count += 1;
-                        #[cfg(test)]
-                        println!("found XMAS in ({}, {}) => {:?}", i, j, positions);
-                    }
-                }
-
-                // down
-                if i + 3 <= word_search.len() - 1 {
-                    let mut positions: Vec<(usize, usize)> = Vec::new();
-                    let mut down_count = 0;
-                    for k in 1..check_letters.len() + 1 {
-                        if word_search[i + k][j] == check_letters[k - 1] {
-                            positions.push((i + k, j));
-                            down_count += 1;
-                        }
-                    }
-                    if down_count == 3 {
-                        count += 1;
-                        #[cfg(test)]
-                        println!("found XMAS in ({}, {}) => {:?}", i, j, positions);
-                    }
-                }
-
-                // left down
-                if j as isize - 3 >= 0 && i + 3 < word_search.len() {
-                    let mut positions: Vec<(usize, usize)> = Vec::new();
-                    let mut left_down_count = 0;
-                    for k in 1..check_letters.len() + 1 {
-                        if word_search[i + k][j - k] == check_letters[k - 1] {
-                            positions.push((i + k, j - k));
-                            left_down_count += 1;
-                        }
-                    }
-                    if left_down_count == 3 {
+                    if matched {
                         count += 1;
                         #[cfg(test)]
                         println!("found XMAS in ({}, {}) => {:?}", i, j, positions);
@@ -185,6 +88,7 @@ pub fn puzzle_1(raw: &str) -> DayResult {
             }
         }
     }
+
     Some(format!("{}", count))
 }
 
@@ -213,8 +117,26 @@ pub fn puzzle_1(raw: &str) -> DayResult {
 /// In this example, an X-MAS appears 9 times.
 ///
 /// Flip the word search from the instructions back over to the word search side and try again. How many times does an X-MAS appear?
-pub fn puzzle_2(_raw: &str) -> DayResult {
-    None
+pub fn puzzle_2(raw: &str) -> DayResult {
+    let word_search: Vec<Vec<u8>> = raw.lines().map(|l| l.as_bytes().to_vec()).collect();
+    let mut count = 0;
+
+    for i in 1..word_search.len() - 1 {
+        for j in 1..word_search[i].len() - 1 {
+            if word_search[i][j] == b'A' {
+                // if main diagonal is (MAS || SAM) && secondary diagonal is (MAS || SAM)
+                if ((word_search[i - 1][j - 1] == b'M' && word_search[i + 1][j + 1] == b'S')
+                    || (word_search[i - 1][j - 1] == b'S' && word_search[i + 1][j + 1] == b'M'))
+                    && ((word_search[i - 1][j + 1] == b'M' && word_search[i + 1][j - 1] == b'S')
+                        || (word_search[i - 1][j + 1] == b'S' && word_search[i + 1][j - 1] == b'M'))
+                {
+                    count += 1;
+                }
+            }
+        }
+    }
+
+    Some(format!("{}", count))
 }
 
 mod tests {
@@ -235,6 +157,22 @@ MAMMMXMMMM
 MXMXAXMASX"
             )
         );
+
+        debug_assert_eq!(
+            Some("9".to_string()),
+            super::puzzle_2(
+                "MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX"
+            )
+        );
     }
 
     #[test]
@@ -242,6 +180,10 @@ MXMXAXMASX"
         debug_assert_eq!(
             Some("2718".to_string()),
             super::puzzle_1(include_str!("../../inputs/year2024/day04.txt"))
+        );
+        debug_assert_eq!(
+            Some("2046".to_string()),
+            super::puzzle_2(include_str!("../../inputs/year2024/day04.txt"))
         );
     }
 }
