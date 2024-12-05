@@ -2,6 +2,7 @@ mod day01;
 mod day02;
 mod day03;
 mod day04;
+mod day05;
 use crate::prelude::Day;
 
 pub const YEAR_2024: [Option<Day>; 25] = [
@@ -15,7 +16,10 @@ pub const YEAR_2024: [Option<Day>; 25] = [
         || day04::puzzle_1(include_str!("../../inputs/year2024/day04.txt")),
         || day04::puzzle_2(include_str!("../../inputs/year2024/day04.txt")),
     )),
-    None,
+    Some((
+        || day05::puzzle_1(include_str!("../../inputs/year2024/day05.txt")),
+        || day05::puzzle_2(include_str!("../../inputs/year2024/day05.txt")),
+    )),
     None,
     None,
     None,
