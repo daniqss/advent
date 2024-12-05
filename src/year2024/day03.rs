@@ -95,7 +95,7 @@ pub fn puzzle_2(raw: &str) -> DayResult {
     Some(format!("{}", result))
 }
 
-mod tests {
+mod tests_2024_03 {
     #[test]
     pub fn test_inputs() {
         debug_assert_eq!(

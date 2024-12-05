@@ -113,61 +113,126 @@ pub fn puzzle_1(raw: &str) -> DayResult {
             .sum::<usize>()
             .to_string(),
     )
-    // let (ordering_rules, updates): (Vec<(usize, usize)>, Vec<HashMap<usize, usize>>) =
-    //     match raw.split_once("\n\n") {
-    //         Some((ordering_rules, updates)) => (
-    //             ordering_rules
-    //                 .lines()
-    //                 .map(|l| {
-    //                     let (a, b) = l.split_once('|').unwrap();
-    //                     (a.parse::<usize>().unwrap(), b.parse::<usize>().unwrap())
-    //                 })
-    //                 .collect(),
-    //             updates
-    //                 .lines()
-    //                 .map(|l| {
-    //                     l.split(',')
-    //                         .enumerate()
-    //                         .map(|(i, n)| (n.parse::<usize>().unwrap(), i))
-    //                         .collect::<HashMap<usize, usize>>()
-    //                 })
-    //                 .collect(),
-    //         ),
-    //         None => return None,
-    //     };
-
-    // Some(
-    //     updates
-    //         .iter()
-    //         .filter_map(|update| {
-    //             if ordering_rules
-    //                 .iter()
-    //                 .all(|(r1, r2)| match (update.get(r1), update.get(r2)) {
-    //                     (Some(i1), Some(i2)) => i1 < i2,
-    //                     _ => true,
-    //                 })
-    //             {
-    //                 update.get(&(update.len() / 2))
-    //             } else {
-    //                 None
-    //             }
-    //         })
-    //         .sum::<usize>()
-    //         .to_string(),
-    // )
 }
 
-pub fn puzzle_2(_raw: &str) -> DayResult {
-    None
+/// --- Part Two ---
+/// While the Elves get to work printing the correctly-ordered updates, you have a little time to fix the rest of them.
+///
+/// For each of the incorrectly-ordered updates, use the page ordering rules to put the page numbers in the right order. For the above example, here are the three incorrectly-ordered updates and their correct orderings:
+///
+/// 75,97,47,61,53 becomes 97,75,47,61,53.
+/// 61,13,29 becomes 61,29,13.
+/// 97,13,75,29,47 becomes 97,75,47,29,13.
+/// After taking only the incorrectly-ordered updates and ordering them correctly, their middle page numbers are 47, 29, and 47. Adding these together produces 123.
+///
+/// Find the updates which are not in the correct order. What do you get if you add up the middle page numbers after correctly ordering just those updates?
+pub fn puzzle_2(raw: &str) -> DayResult {
+    // split the input into rules (75|45) and updates (75,45,61,53,29)
+    let (ordering_rules, updates): (Vec<(usize, usize)>, Vec<Vec<usize>>) =
+        match raw.split_once("\n\n") {
+            Some((ordering_rules, updates)) => (
+                ordering_rules
+                    .lines()
+                    .map(|l| {
+                        let (a, b) = l.split_once('|').unwrap();
+                        (a.parse::<usize>().unwrap(), b.parse::<usize>().unwrap())
+                    })
+                    .collect(),
+                updates
+                    .lines()
+                    .map(|l| l.split(',').map(|n| n.parse::<usize>().unwrap()).collect())
+                    .collect(),
+            ),
+            None => return None,
+        };
+
+    Some(
+        updates
+            .iter()
+            // filter the updates that are NOT in the correct order
+            .filter_map(|update| {
+                if !ordering_rules.iter().all(|(r1, r2)| {
+                    match (
+                        // find rule 1 in update pages
+                        update.iter().position(|&n| n == *r1),
+                        // find rule 2 in update pages
+                        update.iter().position(|&n| n == *r2),
+                    ) {
+                        (Some(i1), Some(i2)) => i1 < i2,
+                        _ => true,
+                    }
+                }) {
+                    let mut sorted = update.clone();
+                    // sort the update pages based on the ordering rules
+                    sorted.sort_by(|a, b| {
+                        let mut a_score = 0;
+                        let mut b_score = 0;
+                        for (r1, r2) in &ordering_rules {
+                            // a is before b in the rules a_score encreases
+                            if a == r1 && b == r2 {
+                                a_score += 1;
+                            }
+                            // b is before a in the rules b_score encreases
+                            else if a == r2 && b == r1 {
+                                b_score += 1;
+                            }
+                        }
+                        // a will be before b if a_score is greater than b_score
+                        a_score.cmp(&b_score)
+                    });
+                    Some(sorted[sorted.len() / 2])
+                }
+                // return None if the update is in the correct order
+                else {
+                    None
+                }
+            })
+            .sum::<usize>()
+            .to_string(),
+    )
 }
 
-mod tests {
+mod tests_2024_05 {
 
     #[test]
     pub fn test_inputs() {
         debug_assert_eq!(
             Some("143".to_string()),
             super::puzzle_1(
+                r"47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47"
+            )
+        );
+
+        debug_assert_eq!(
+            Some("123".to_string()),
+            super::puzzle_2(
                 r"47|53
 97|13
 97|61
@@ -205,6 +270,11 @@ mod tests {
         debug_assert_eq!(
             Some("5651".to_string()),
             super::puzzle_1(include_str!("../../inputs/year2024/day05.txt"))
+        );
+
+        debug_assert_eq!(
+            Some("4743".to_string()),
+            super::puzzle_2(include_str!("../../inputs/year2024/day05.txt"))
         )
     }
 }
