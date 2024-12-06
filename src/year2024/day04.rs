@@ -177,13 +177,15 @@ MXMXAXMASX"
 
     #[test]
     pub fn real_inputs() {
-        debug_assert_eq!(
-            Some("2718".to_string()),
-            super::puzzle_1(include_str!("../../inputs/year2024/day04.txt"))
-        );
-        debug_assert_eq!(
-            Some("2046".to_string()),
-            super::puzzle_2(include_str!("../../inputs/year2024/day04.txt"))
-        );
+        if cfg!(feature = "real_input_debug") {
+            debug_assert_eq!(
+                Some("2718".to_string()),
+                super::puzzle_1(include_str!("../../inputs/year2024/day04.txt"))
+            );
+            debug_assert_eq!(
+                Some("2046".to_string()),
+                super::puzzle_2(include_str!("../../inputs/year2024/day04.txt"))
+            );
+        }
     }
 }

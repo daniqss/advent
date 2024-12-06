@@ -267,14 +267,16 @@ mod tests_2024_05 {
 
     #[test]
     fn real_inputs() {
-        debug_assert_eq!(
-            Some("5651".to_string()),
-            super::puzzle_1(include_str!("../../inputs/year2024/day05.txt"))
-        );
+        if cfg!(feature = "real_input_debug") {
+            debug_assert_eq!(
+                Some("5651".to_string()),
+                super::puzzle_1(include_str!("../../inputs/year2024/day05.txt"))
+            );
 
-        debug_assert_eq!(
-            Some("4743".to_string()),
-            super::puzzle_2(include_str!("../../inputs/year2024/day05.txt"))
-        )
+            debug_assert_eq!(
+                Some("4743".to_string()),
+                super::puzzle_2(include_str!("../../inputs/year2024/day05.txt"))
+            )
+        }
     }
 }
